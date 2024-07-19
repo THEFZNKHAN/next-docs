@@ -1,9 +1,10 @@
 import React from "react";
+import { Button } from "@/components/ui/button";
 
 const page = () => {
     return (
         <div>
-            <h1>home page</h1>
+            <Button>Click me</Button>
         </div>
     );
 };
