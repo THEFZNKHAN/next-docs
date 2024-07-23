@@ -4,11 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ClientSideSuspense, RoomProvider } from "@liveblocks/react/suspense";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import { updateDocument } from "@/lib/actions/room.actions";
 import ActiveCollaborators from "./ActiveCollaborators";
 import { Editor } from "./editor/Editor";
-import Header from "./Header";
 import { Input } from "./ui/input";
-import { updateDocument } from "@/lib/actions/room.actions";
+import Header from "./Header";
+import Loader from "./Loader";
 
 const CollaborativeRoom = ({
     roomId,
@@ -30,7 +31,7 @@ const CollaborativeRoom = ({
             setLoading(true);
 
             try {
-                if (documentTitle === roomMetadata?.title) {
+                if (documentTitle !== roomMetadata.title) {
                     const updatedDocument = await updateDocument(
                         roomId,
                         documentTitle
@@ -73,7 +74,7 @@ const CollaborativeRoom = ({
 
     return (
         <RoomProvider id={roomId}>
-            <ClientSideSuspense fallback={<div>Loading…</div>}>
+            <ClientSideSuspense fallback={<Loader />}>
                 <div className="collaborative-room">
                     <Header>
                         <div
