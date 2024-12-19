@@ -2,7 +2,7 @@
 
 import { nanoid } from "nanoid";
 import { revalidatePath } from "next/cache";
-import { parseStringify } from "../utils";
+import { getAccessType, parseStringify } from "../utils";
 import { liveblocks } from "../liveblocks";
 
 export const createDocument = async ({
@@ -81,5 +81,58 @@ export const getDocuments = async (email: string) => {
         return parseStringify(rooms);
     } catch (error) {
         console.error(`Error happened while getting rooms: ${error}`);
+    }
+};
+
+export const updateDocumentAccess = async ({
+    roomId,
+    email,
+    userType,
+    updatedBy,
+}: ShareDocumentParams) => {
+    try {
+        const usersAccesses: RoomAccesses = {
+            [email]: getAccessType(userType) as AccessType,
+        };
+
+        const room = await liveblocks.updateRoom(roomId, {
+            usersAccesses,
+        });
+
+        if (room) {
+            // TODO: Send a notification to the user
+        }
+
+        revalidatePath(`/document/${roomId}`);
+        return parseStringify(room);
+    } catch (error) {
+        console.error(`Error happened while updating room access: ${error}`);
+    }
+};
+
+export const removeCollaborator = async ({
+    roomId,
+    email,
+}: {
+    roomId: string;
+    email: string;
+}) => {
+    try {
+        const room = await liveblocks.getRoom(roomId);
+
+        if (room.metadata.createId === email) {
+            throw new Error("You can't remove the owner of the document");
+        }
+
+        const updatedRoom = await liveblocks.updateRoom(roomId, {
+            usersAccesses: {
+                [email]: null,
+            },
+        });
+
+        revalidatePath(`/document/${roomId}`);
+        return parseStringify(updatedRoom);
+    } catch (error) {
+        console.error(`Error happened while removing collaborator: ${error}`);
     }
 };
