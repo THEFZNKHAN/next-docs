@@ -4,6 +4,7 @@ import { nanoid } from "nanoid";
 import { revalidatePath } from "next/cache";
 import { getAccessType, parseStringify } from "../utils";
 import { liveblocks } from "../liveblocks";
+import { redirect } from "next/navigation";
 
 export const createDocument = async ({
     userId,
@@ -134,5 +135,16 @@ export const removeCollaborator = async ({
         return parseStringify(updatedRoom);
     } catch (error) {
         console.error(`Error happened while removing collaborator: ${error}`);
+    }
+};
+
+export const deleteDocument = async (roomId: string) => {
+    try {
+        await liveblocks.deleteRoom(roomId);
+
+        revalidatePath("/");
+        redirect("/");
+    } catch (error) {
+        console.error(`Error happened while deleting room: ${error}`);
     }
 };
