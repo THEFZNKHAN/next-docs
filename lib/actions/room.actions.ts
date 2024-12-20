@@ -67,7 +67,7 @@ export const updateDocument = async (roomId: string, title: string) => {
             },
         });
 
-        revalidatePath(`/document/${roomId}`);
+        revalidatePath(`/documents/${roomId}`);
 
         return parseStringify(updatedRoom);
     } catch (error) {
@@ -104,7 +104,7 @@ export const updateDocumentAccess = async ({
             // TODO: Send a notification to the user
         }
 
-        revalidatePath(`/document/${roomId}`);
+        revalidatePath(`/documents/${roomId}`);
         return parseStringify(room);
     } catch (error) {
         console.error(`Error happened while updating room access: ${error}`);
@@ -131,7 +131,7 @@ export const removeCollaborator = async ({
             },
         });
 
-        revalidatePath(`/document/${roomId}`);
+        revalidatePath(`/documents/${roomId}`);
         return parseStringify(updatedRoom);
     } catch (error) {
         console.error(`Error happened while removing collaborator: ${error}`);
