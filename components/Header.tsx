@@ -12,14 +12,14 @@ const Header = ({ children, className }: HeaderProps) => {
                     alt="Logo with name"
                     width={120}
                     height={32}
-                    className="hidden md:block"
+                    className="hidden w-auto h-auto md:block"
                 />
                 <Image
                     src="/assets/icons/logo-icon.svg"
                     alt="Logo"
                     width={120}
                     height={32}
-                    className="mr-2 md:hidden"
+                    className="mr-2 w-auto h-auto md:hidden"
                 />
             </Link>
 

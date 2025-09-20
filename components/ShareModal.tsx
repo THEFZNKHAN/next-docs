@@ -45,7 +45,7 @@ const ShareModal = ({
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger>
+            <DialogTrigger asChild>
                 <Button
                     className="gradient-blue flex h-9 gap-1 px-4"
                     disabled={currentUserType !== "editor"}
