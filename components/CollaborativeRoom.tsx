@@ -49,15 +49,19 @@ const CollaborativeRoom = ({
     };
 
     useEffect(() => {
-        const handleClickOutside = (e: MouseEvent) => {
+        const handleClickOutside = async (e: MouseEvent) => {
             if (
                 containerRef.current &&
                 !containerRef.current.contains(e.target as Node)
             ) {
-                setEditing(false);
+                if (editing) {
+                    setEditing(false);
+                    // Only update if title changed
+                    if (documentTitle !== roomMetadata.title) {
+                        await updateDocument(roomId, documentTitle);
+                    }
+                }
             }
-
-            updateDocument(roomId, documentTitle);
         };
 
         document.addEventListener("mousedown", handleClickOutside);
@@ -65,7 +69,7 @@ const CollaborativeRoom = ({
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
-    }, [roomId, documentTitle]);
+    }, [roomId, documentTitle, editing, roomMetadata.title]);
 
     useEffect(() => {
         if (editing && inputRef.current) {

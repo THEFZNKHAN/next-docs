@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { cn } from "@/lib/utils";
 import Provider from "./Provider";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 const fontSans = FontSans({
     subsets: ["latin"],
@@ -39,6 +40,7 @@ export default function RootLayout({
                     <Provider>
                         {children}
                     </Provider>
+                    <Toaster position="top-center" richColors />
                 </body>
             </html>
         </ClerkProvider>

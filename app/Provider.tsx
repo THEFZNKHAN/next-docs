@@ -7,7 +7,6 @@ import {
 } from "@liveblocks/react/suspense";
 import Loader from "@/components/Loader";
 import { getClerkUsers, getDocumentUsers } from "@/lib/actions/users.actions";
-import { EmailAddress } from "@clerk/nextjs/server";
 import { useUser } from "@clerk/nextjs";
 
 const Provider = ({ children }: { children: ReactNode }) => {
@@ -21,9 +20,12 @@ const Provider = ({ children }: { children: ReactNode }) => {
                 return users;
             }}
             resolveMentionSuggestions={async ({ text, roomId }) => {
+                const currentUserEmail = clerkUser?.emailAddresses?.[0]?.emailAddress;
+                if (!currentUserEmail) return [];
+                
                 const roomUsers = await getDocumentUsers({
                     roomId,
-                    currentUser: clerkUser?.emailAddresses[0].emailAddress!,
+                    currentUser: currentUserEmail,
                     text,
                 });
                 return roomUsers;

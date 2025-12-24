@@ -14,9 +14,13 @@ const Home = async () => {
     const clerkUser = await currentUser();
     if (!clerkUser) redirect("/sign-in");
 
-    const roomDocuments = await getDocuments(
-        clerkUser.emailAddresses[0].emailAddress
-    );
+    const userEmail = clerkUser.emailAddresses?.[0]?.emailAddress;
+    if (!userEmail) {
+        console.error("User email not found");
+        redirect("/sign-in");
+    }
+
+    const roomDocuments = await getDocuments(userEmail);
 
     return (
         <main className="home-container">
@@ -35,16 +39,16 @@ const Home = async () => {
                         <h3 className="text-28-semibold">All documents</h3>
                         <AddDocumentBtn
                             userId={clerkUser.id}
-                            email={clerkUser.emailAddresses[0].emailAddress}
+                            email={userEmail}
                         />
                     </div>
 
                     <ul className="document-ul">
                         {roomDocuments.data.map(
-                            ({ id, metadata, createdAt }: any) => (
-                                <li key={id} className="document-list-item">
+                            (doc: { id: string; metadata: { title: string }; createdAt: string }) => (
+                                <li key={doc.id} className="document-list-item">
                                     <Link
-                                        href={`/documents/${id}`}
+                                        href={`/documents/${doc.id}`}
                                         className="flex flex-1 items-center gap-4"
                                     >
                                         <div className="hidden rounded-md bg-dark-500 p-2 sm:block">
@@ -58,17 +62,17 @@ const Home = async () => {
 
                                         <div className="space-y-1">
                                             <p className="line-clamp-1 text-lg">
-                                                {metadata.title}
+                                                {doc.metadata.title}
                                             </p>
 
                                             <p className="text-sm font-light text-blue-100">
                                                 Created about{" "}
-                                                {dateConverter(createdAt)}
+                                                {dateConverter(doc.createdAt)}
                                             </p>
                                         </div>
                                     </Link>
 
-                                    <DeleteModal roomId={id} />
+                                    <DeleteModal roomId={doc.id} />
                                 </li>
                             )
                         )}
@@ -86,7 +90,7 @@ const Home = async () => {
 
                     <AddDocumentBtn
                         userId={clerkUser.id}
-                        email={clerkUser.emailAddresses[0].emailAddress}
+                        email={userEmail}
                     />
                 </div>
             )}

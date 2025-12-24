@@ -14,7 +14,7 @@ export const createDocument = async ({
 
     try {
         const metadata = {
-            createId: userId,
+            creatorId: userId,
             email,
             title: "Untitled",
         };
@@ -34,6 +34,7 @@ export const createDocument = async ({
         return parseStringify(room);
     } catch (error) {
         console.error(`Error happened while creating room: ${error}`);
+        throw error;
     }
 };
 
@@ -56,6 +57,7 @@ export const getDocument = async ({
         return parseStringify(room);
     } catch (error) {
         console.error(`Error happened while getting a room: ${error}`);
+        throw error;
     }
 };
 
@@ -72,6 +74,7 @@ export const updateDocument = async (roomId: string, title: string) => {
         return parseStringify(updatedRoom);
     } catch (error) {
         console.error(`Error happened while updating room: ${error}`);
+        throw error;
     }
 };
 
@@ -82,6 +85,7 @@ export const getDocuments = async (email: string) => {
         return parseStringify(rooms);
     } catch (error) {
         console.error(`Error happened while getting rooms: ${error}`);
+        throw error;
     }
 };
 
@@ -121,6 +125,7 @@ export const updateDocumentAccess = async ({
         return parseStringify(room);
     } catch (error) {
         console.error(`Error happened while updating room access: ${error}`);
+        throw error;
     }
 };
 
@@ -134,7 +139,7 @@ export const removeCollaborator = async ({
     try {
         const room = await liveblocks.getRoom(roomId);
 
-        if (room.metadata.createId === email) {
+        if (room.metadata.email === email) {
             throw new Error("You can't remove the owner of the document");
         }
 
@@ -148,6 +153,7 @@ export const removeCollaborator = async ({
         return parseStringify(updatedRoom);
     } catch (error) {
         console.error(`Error happened while removing collaborator: ${error}`);
+        throw error;
     }
 };
 
@@ -159,5 +165,6 @@ export const deleteDocument = async (roomId: string) => {
         redirect("/");
     } catch (error) {
         console.error(`Error happened while deleting room: ${error}`);
+        throw error;
     }
 };

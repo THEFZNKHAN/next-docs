@@ -1,4 +1,4 @@
-"use-client";
+"use client";
 
 import { useSelf } from "@liveblocks/react/suspense";
 import { useState } from "react";
@@ -17,6 +17,7 @@ import { Input } from "./ui/input";
 import UserTypeSelector from "./UserTypeSelector";
 import Collaborator from "./Collaborator";
 import { updateDocumentAccess } from "@/lib/actions/room.actions";
+import { toast } from "sonner";
 
 const ShareModal = ({
     roomId,
@@ -31,16 +32,42 @@ const ShareModal = ({
     const [userType, setUserType] = useState<UserType>("viewer");
 
     const shareDocumentHandler = async () => {
+        // Validate email
+        if (!email.trim()) {
+            toast.error('Please enter an email address');
+            return;
+        }
+
+        if (!email.includes('@') || !email.includes('.')) {
+            toast.error('Please enter a valid email address');
+            return;
+        }
+
         setLoading(true);
 
-        await updateDocumentAccess({
-            roomId,
-            email,
-            userType: userType as UserType,
-            updatedBy: user.info,
-        });
+        try {
+            await updateDocumentAccess({
+                roomId,
+                email,
+                userType: userType as UserType,
+                updatedBy: user.info,
+            });
 
-        setLoading(false);
+            // Reset form
+            setEmail("");
+            setUserType("viewer");
+
+            // Show success message
+            toast.success('User invited successfully!');
+
+            // Refresh to show new collaborator
+            window.location.reload();
+        } catch (error) {
+            console.error('Error sharing document:', error);
+            toast.error('Failed to invite user. Please try again.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (

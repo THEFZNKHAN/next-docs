@@ -3,11 +3,10 @@
 import { clerkClient } from "@clerk/nextjs/server";
 import { parseStringify } from "../utils";
 import { liveblocks } from "../liveblocks";
-import { parse } from "path";
 
 export const getClerkUsers = async ({ userIds }: { userIds: string[] }) => {
     try {
-        const { data } = await clerkClient.users.getUserList({
+        const { data } = await (await clerkClient()).users.getUserList({
             emailAddress: userIds,
         });
 
@@ -16,15 +15,17 @@ export const getClerkUsers = async ({ userIds }: { userIds: string[] }) => {
             name: `${user.firstName} ${user.lastName}`,
             email: user.emailAddresses[0].emailAddress,
             avatar: user.imageUrl,
+            color: '#3371FF',
         }));
 
-        const sortedUsers = userIds.map((email) =>
-            users.find((user) => user.email === email)
-        );
+        const sortedUsers = userIds
+            .map((email) => users.find((user) => user.email === email))
+            .filter((user): user is NonNullable<typeof user> => user !== undefined);
 
         return parseStringify(sortedUsers);
     } catch (error) {
         console.error(`Error fetching users: ${error}`);
+        return [];
     }
 };
 
@@ -55,5 +56,6 @@ export const getDocumentUsers = async ({
         return parseStringify(users);
     } catch (error) {
         console.error(`Error fetching document users: ${error}`);
+        return [];
     }
 };
